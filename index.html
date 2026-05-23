@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AntonDoctor Fastigheter — AI-drivet mäkleri</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0a0a0a;
+      --white:   #ffffff;
+      --gold:    #c9a84c;
+      --gold-lt: #e8c97a;
+      --gray:    #f5f5f3;
+      --text:    #1a1a1a;
+      --muted:   #6b6b6b;
+      --border:  #e0e0e0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 6%;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+    }
+    .logo {
+      font-size: 1.3rem; font-weight: 700; color: var(--white);
+      letter-spacing: 0.04em; text-decoration: none;
+    }
+    .logo span { color: var(--gold); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,0.75); text-decoration: none;
+      font-size: 0.9rem; letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      background: var(--gold); color: var(--black);
+      padding: 0.55rem 1.4rem; border-radius: 4px;
+      font-weight: 600; font-size: 0.88rem;
+      text-decoration: none; letter-spacing: 0.02em;
+      transition: background 0.2s;
+    }
+    .nav-cta:hover { background: var(--gold-lt); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: var(--black);
+      display: flex; align-items: center;
+      position: relative; overflow: hidden;
+      padding: 8rem 6% 6rem;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 60% 50%, rgba(201,168,76,0.08) 0%, transparent 70%);
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: center;
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      position: relative;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.3);
+      color: var(--gold); font-size: 0.8rem; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.4rem 1rem; border-radius: 20px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow::before { content: '●'; font-size: 0.5rem; }
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 800; line-height: 1.1;
+      color: var(--white); margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    h1 em { font-style: normal; color: var(--gold); }
+    .hero-sub {
+      color: rgba(255,255,255,0.6); font-size: 1.1rem;
+      line-height: 1.7; margin-bottom: 2.5rem; max-width: 480px;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--gold); color: var(--black);
+      padding: 0.85rem 2rem; border-radius: 4px;
+      font-weight: 700; font-size: 0.95rem;
+      text-decoration: none; letter-spacing: 0.02em;
+      transition: background 0.2s, transform 0.15s;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--gold-lt); transform: translateY(-1px); }
+    .btn-outline {
+      border: 1px solid rgba(255,255,255,0.25); color: var(--white);
+      padding: 0.85rem 2rem; border-radius: 4px;
+      font-weight: 600; font-size: 0.95rem;
+      text-decoration: none; letter-spacing: 0.02em;
+      transition: border-color 0.2s, transform 0.15s;
+      display: inline-block;
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-1px); }
+
+    .hero-visual {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 12px; padding: 2rem;
+      backdrop-filter: blur(8px);
+    }
+    .agent-pill {
+      display: flex; align-items: center; gap: 0.75rem;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; padding: 0.75rem 1rem;
+      margin-bottom: 0.75rem; transition: border-color 0.2s;
+    }
+    .agent-pill:last-child { margin-bottom: 0; }
+    .agent-pill:hover { border-color: rgba(201,168,76,0.3); }
+    .agent-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: rgba(201,168,76,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .agent-info { flex: 1; }
+    .agent-name { color: var(--white); font-size: 0.88rem; font-weight: 600; }
+    .agent-desc { color: rgba(255,255,255,0.45); font-size: 0.78rem; }
+    .agent-status {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #4ade80; box-shadow: 0 0 6px #4ade80;
+    }
+
+    /* ── STATS ── */
+    .stats {
+      background: var(--black);
+      border-top: 1px solid rgba(201,168,76,0.15);
+      padding: 3rem 6%;
+    }
+    .stats-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 2rem; text-align: center;
+    }
+    .stat-num {
+      font-size: 2.5rem; font-weight: 800;
+      color: var(--gold); letter-spacing: -0.02em;
+    }
+    .stat-label { color: rgba(255,255,255,0.5); font-size: 0.88rem; margin-top: 0.25rem; }
+
+    /* ── SECTIONS ── */
+    section { padding: 6rem 6%; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+    .section-tag {
+      display: inline-block;
+      color: var(--gold); font-size: 0.78rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      font-weight: 600; margin-bottom: 1rem;
+    }
+    h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800; line-height: 1.15;
+      letter-spacing: -0.02em; margin-bottom: 1rem;
+    }
+    .section-sub {
+      color: var(--muted); font-size: 1.05rem;
+      line-height: 1.7; max-width: 560px; margin-bottom: 3.5rem;
+    }
+
+    /* ── AGENTS GRID ── */
+    #agenter { background: var(--gray); }
+    .agents-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .agent-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 12px; padding: 2rem;
+      transition: box-shadow 0.25s, transform 0.2s, border-color 0.2s;
+    }
+    .agent-card:hover {
+      box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+      transform: translateY(-3px);
+      border-color: var(--gold);
+    }
+    .card-icon {
+      width: 52px; height: 52px; border-radius: 12px;
+      background: rgba(201,168,76,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 1.25rem;
+    }
+    .agent-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem; }
+    .agent-card p { color: var(--muted); font-size: 0.92rem; line-height: 1.6; margin-bottom: 1.25rem; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      background: var(--gray); color: var(--muted);
+      font-size: 0.75rem; padding: 0.25rem 0.65rem;
+      border-radius: 20px; border: 1px solid var(--border);
+    }
+
+    /* ── HOW IT WORKS ── */
+    #process { background: var(--white); }
+    .steps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem; position: relative;
+    }
+    .step { text-align: center; padding: 1.5rem; }
+    .step-num {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--black); color: var(--gold);
+      font-size: 1.1rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+    .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .step p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+    /* ── WHY ── */
+    #varfor { background: var(--black); }
+    #varfor h2, #varfor .section-tag { color: var(--white); }
+    #varfor .section-sub { color: rgba(255,255,255,0.5); }
+    .why-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .why-card {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 2rem;
+      transition: border-color 0.2s;
+    }
+    .why-card:hover { border-color: rgba(201,168,76,0.4); }
+    .why-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+    .why-card h3 { color: var(--white); font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .why-card p { color: rgba(255,255,255,0.45); font-size: 0.9rem; line-height: 1.6; }
+
+    /* ── CTA ── */
+    #kontakt {
+      background: linear-gradient(135deg, var(--gold) 0%, #a07830 100%);
+      text-align: center;
+    }
+    #kontakt h2 { color: var(--black); }
+    #kontakt p { color: rgba(0,0,0,0.65); font-size: 1.05rem; margin-bottom: 2.5rem; max-width: 520px; margin-left: auto; margin-right: auto; }
+    .contact-form {
+      display: flex; gap: 1rem; justify-content: center;
+      flex-wrap: wrap; max-width: 480px; margin: 0 auto 1rem;
+    }
+    .contact-form input {
+      flex: 1; min-width: 200px;
+      padding: 0.85rem 1.2rem; border-radius: 4px;
+      border: none; font-size: 0.95rem;
+      outline: none;
+    }
+    .btn-dark {
+      background: var(--black); color: var(--white);
+      padding: 0.85rem 2rem; border-radius: 4px;
+      font-weight: 700; font-size: 0.95rem;
+      border: none; cursor: pointer; letter-spacing: 0.02em;
+      transition: background 0.2s; white-space: nowrap;
+    }
+    .btn-dark:hover { background: #2a2a2a; }
+    .form-note { color: rgba(0,0,0,0.5); font-size: 0.82rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 3rem 6%;
+    }
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-logo { color: var(--white); font-size: 1.1rem; font-weight: 700; }
+    .footer-logo span { color: var(--gold); }
+    footer p { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
+    .footer-links { display: flex; gap: 2rem; list-style: none; }
+    .footer-links a { color: rgba(255,255,255,0.35); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--gold); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">Anton<span>Doctor</span></a>
+  <ul class="nav-links">
+    <li><a href="#agenter">Agenter</a></li>
+    <li><a href="#process">Hur det fungerar</a></li>
+    <li><a href="#varfor">Varför vi</a></li>
+    <li><a href="#kontakt">Kontakt</a></li>
+  </ul>
+  <a class="nav-cta" href="#kontakt">Kom igång</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-eyebrow">AI-drivet mäkleri</div>
+      <h1>Smarter fastighetsaffärer med <em>AI-agenter</em></h1>
+      <p class="hero-sub">
+        AntonDoctor kombinerar erfaren mäklarkompetens med fem specialiserade
+        AI-agenter som arbetar dygnet runt — från leadhantering till kontraktsskrivning.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#kontakt">Boka ett möte</a>
+        <a class="btn-outline" href="#agenter">Se våra agenter</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="agent-pill">
+        <div class="agent-icon">🎯</div>
+        <div class="agent-info">
+          <div class="agent-name">Leadsagent</div>
+          <div class="agent-desc">Kvalificerar och poängsätter leads automatiskt</div>
+        </div>
+        <div class="agent-status"></div>
+      </div>
+      <div class="agent-pill">
+        <div class="agent-icon">📞</div>
+        <div class="agent-info">
+          <div class="agent-name">Uppföljningsagent</div>
+          <div class="agent-desc">Skapar personaliserade uppföljningar</div>
+        </div>
+        <div class="agent-status"></div>
+      </div>
+      <div class="agent-pill">
+        <div class="agent-icon">📄</div>
+        <div class="agent-info">
+          <div class="agent-name">Dokumentagent</div>
+          <div class="agent-desc">Upprättar och granskar avtal</div>
+        </div>
+        <div class="agent-status"></div>
+      </div>
+      <div class="agent-pill">
+        <div class="agent-icon">🏠</div>
+        <div class="agent-info">
+          <div class="agent-name">Visningsagent</div>
+          <div class="agent-desc">Planerar och administrerar visningar</div>
+        </div>
+        <div class="agent-status"></div>
+      </div>
+      <div class="agent-pill">
+        <div class="agent-icon">📅</div>
+        <div class="agent-info">
+          <div class="agent-name">Mötesbokningsagent</div>
+          <div class="agent-desc">Hanterar kalendern och bokar möten</div>
+        </div>
+        <div class="agent-status"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-inner">
+    <div>
+      <div class="stat-num">5</div>
+      <div class="stat-label">Specialiserade AI-agenter</div>
+    </div>
+    <div>
+      <div class="stat-num">24/7</div>
+      <div class="stat-label">Tillgänglighet</div>
+    </div>
+    <div>
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Automatiserad leadhantering</div>
+    </div>
+    <div>
+      <div class="stat-num">< 60s</div>
+      <div class="stat-label">Svarstid per förfrågan</div>
+    </div>
+  </div>
+</div>
+
+<!-- AGENTS -->
+<section id="agenter">
+  <div class="section-inner">
+    <span class="section-tag">Våra agenter</span>
+    <h2>Fem specialister, ett sammanhållet team</h2>
+    <p class="section-sub">
+      Varje agent är tränad för sitt område och samarbetar sömlöst med de övriga
+      via en central orchestrator.
+    </p>
+    <div class="agents-grid">
+      <div class="agent-card">
+        <div class="card-icon">🎯</div>
+        <h3>Leadsagent</h3>
+        <p>Tar emot nya leads, samlar in kontaktuppgifter, poängsätter intressenivån
+           och håller CRM-databasen uppdaterad i realtid.</p>
+        <div class="card-tags">
+          <span class="tag">Lead-scoring</span>
+          <span class="tag">Kvalificering</span>
+          <span class="tag">CRM</span>
+        </div>
+      </div>
+      <div class="agent-card">
+        <div class="card-icon">📞</div>
+        <h3>Uppföljningsagent</h3>
+        <p>Skapar personaliserade uppföljningsmeddelanden för email, SMS och telefon.
+           Schemalägger kontakter och prioriterar varma leads.</p>
+        <div class="card-tags">
+          <span class="tag">Email</span>
+          <span class="tag">SMS</span>
+          <span class="tag">Automatisering</span>
+        </div>
+      </div>
+      <div class="agent-card">
+        <div class="card-icon">📄</div>
+        <h3>Dokumentagent</h3>
+        <p>Upprättar uppdragsavtal, köpeavtalsutkast och budgivningsdokument.
+           Analyserar innehåll och flaggar felaktigheter innan signering.</p>
+        <div class="card-tags">
+          <span class="tag">Avtal</span>
+          <span class="tag">Granskning</span>
+          <span class="tag">Juridik</span>
+        </div>
+      </div>
+      <div class="agent-card">
+        <div class="card-icon">🏠</div>
+        <h3>Visningsagent</h3>
+        <p>Bokar visningar, registrerar deltagare och förbereder kompletta
+           visningsunderlag med säljpunkter och budgivningsinformation.</p>
+        <div class="card-tags">
+          <span class="tag">Bokning</span>
+          <span class="tag">Underlag</span>
+          <span class="tag">Uppföljning</span>
+        </div>
+      </div>
+      <div class="agent-card">
+        <div class="card-icon">📅</div>
+        <h3>Mötesbokningsagent</h3>
+        <p>Hanterar mäklarnas kalender, bokar rådgivningsmöten och skickar
+           bekräftelser till kunder — alltid med rätt mäklare på rätt tid.</p>
+        <div class="card-tags">
+          <span class="tag">Kalender</span>
+          <span class="tag">Bekräftelser</span>
+          <span class="tag">Ombokning</span>
+        </div>
+      </div>
+      <div class="agent-card" style="background: var(--black); border-color: rgba(201,168,76,0.3);">
+        <div class="card-icon" style="background: rgba(201,168,76,0.2);">🤖</div>
+        <h3 style="color: var(--white);">Orchestrator</h3>
+        <p style="color: rgba(255,255,255,0.5);">Koordinerar alla fem agenter, delegerar uppgifter i rätt ordning
+           och sammanställer resultaten till ett samlat svar.</p>
+        <div class="card-tags">
+          <span class="tag" style="border-color: rgba(201,168,76,0.3); color: var(--gold); background: rgba(201,168,76,0.08);">Multi-agent</span>
+          <span class="tag" style="border-color: rgba(201,168,76,0.3); color: var(--gold); background: rgba(201,168,76,0.08);">Koordinering</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="section-inner">
+    <span class="section-tag">Hur det fungerar</span>
+    <h2>Från lead till avslutad affär</h2>
+    <p class="section-sub">
+      Våra agenter tar hand om hela processen — du fokuserar på relationen med kunden.
+    </p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Lead inkommer</h3>
+        <p>Leadsagenten registrerar och poängsätter intressenten automatiskt baserat på budget, intresse och engagemang.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Uppföljning skapas</h3>
+        <p>Uppföljningsagenten schemalägger rätt kanal och ton — ett personaliserat meddelande skickas vid rätt tillfälle.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Visning bokas</h3>
+        <p>Visningsagenten sätter upp visningen, skickar inbjudningar och förbereder ett professionellt visningsunderlag.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Möte och avtal</h3>
+        <p>Mötesbokningsagenten ordnar rådgivningsmötet. Dokumentagenten upprättar avtalet och kontrollerar att allt stämmer.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="varfor">
+  <div class="section-inner">
+    <span class="section-tag" style="color: var(--gold);">Varför AntonDoctor</span>
+    <h2>Mäklarkompetens förstärkt av AI</h2>
+    <p class="section-sub">
+      Vi är inte ett teknikföretag som spelar mäklare — vi är mäklare som använder
+      teknik för att göra varje affär snabbare och tryggare.
+    </p>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">⚡</div>
+        <h3>Snabbare process</h3>
+        <p>Automatiserade arbetsflöden reducerar administrativ tid med upp till 70 % — mer tid till kundrelationen.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🎯</div>
+        <h3>Inga leads tappas</h3>
+        <p>Varje intressent registreras, poängsätts och följs upp — oavsett tid på dygnet.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🔒</div>
+        <h3>Korrekta dokument</h3>
+        <p>Dokumentagenten analyserar varje avtal och flaggar fel innan det når kunden.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">📊</div>
+        <h3>Full översikt</h3>
+        <p>Realtidsdata på leads, visningar, möten och dokument — allt samlat i ett system.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🤝</div>
+        <h3>Personlig service</h3>
+        <p>AI sköter det repetitiva. Våra mäklare ägnar sin tid åt det som kräver mänsklig närvaro.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🌐</div>
+        <h3>Öppen källkod</h3>
+        <p>Systemet är byggt på Anthropic Claude och kan anpassas efter din verksamhets specifika behov.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="kontakt">
+  <div class="section-inner" style="text-align:center;">
+    <span class="section-tag" style="color: rgba(0,0,0,0.5);">Kom igång idag</span>
+    <h2 style="margin-bottom:1rem;">Redo att modernisera ditt mäkleri?</h2>
+    <p>Lämna din e-postadress så kontaktar vi dig inom 24 timmar för ett kostnadsfritt introduktionsmöte.</p>
+    <div class="contact-form">
+      <input type="email" placeholder="din@email.se" />
+      <button class="btn-dark" onclick="handleSubmit(this)">Skicka</button>
+    </div>
+    <p class="form-note">Ingen bindning. Vi säljer aldrig dina uppgifter.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">Anton<span>Doctor</span></div>
+      <p style="margin-top:0.4rem;">AI-drivet mäkleri · Sverige</p>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#agenter">Agenter</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#varfor">Om oss</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
+    </ul>
+    <p>© 2026 AntonDoctor. Alla rättigheter förbehållna.</p>
+  </div>
+</footer>
+
+<script>
+  // Smooth nav highlight on scroll
+  const sections = document.querySelectorAll('section[id], div[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current
+        ? 'var(--gold)' : '';
+    });
+  });
+
+  // Fade-in on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.agent-card, .why-card, .step').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+
+  // Form submit
+  function handleSubmit(btn) {
+    const input = btn.previousElementSibling;
+    if (!input.value.includes('@')) {
+      input.style.outline = '2px solid red';
+      return;
+    }
+    input.style.outline = '';
+    btn.textContent = '✓ Tack!';
+    btn.disabled = true;
+    input.disabled = true;
+  }
+</script>
+</body>
+</html>
